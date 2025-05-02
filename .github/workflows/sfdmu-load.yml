@@ -28,7 +28,7 @@ jobs:
   load:
     needs: validate
     if: needs.validate.outputs.valid == 'true'
-    uses: ./.github/workflows/reusable/load-data.yml
+    uses: ./.github/workflows/load-data-reusable.yml
     with:
       config-file: config/upsert-accounts.yml
     environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
