@@ -1,0 +1,40 @@
+name: Load data into Salesforce
+on:
+  workflow_call:
+    inputs:
+      config-file:
+        required: true
+        type: string
+
+jobs:
+  sfdmu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SFDMU_USERNAME:     ${{ secrets.SFDMU_USERNAME }}
+      SFDMU_CLIENT_ID:    ${{ secrets.SFDMU_CLIENT_ID }}
+      SFDMU_JWT_KEY:      ${{ secrets.SFDMU_JWT_KEY }}
+      SFDMU_INSTANCE_URL: ${{ secrets.SFDMU_INSTANCE_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI & SFDMU plugin
+        run: |
+          npm install --global @salesforce/cli
+          sf plugins install sfdmu
+
+      - name: Run SFDMU Upsert for ${{ inputs.config-file }}
+        run: |
+          sf sfdmu -b "${{ inputs.config-file }}" --silent --format json                     | tee sfdmu-output.json
+
+      - name: Parse SFDMU Results
+        run: node scripts/parse-sfdmu-results.js sfdmu-output.json
+
+      - name: Upload HTML Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: report-${{ inputs.config-file }}
+          path: reports/${{ inputs.config-file }}.html

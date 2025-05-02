@@ -1,0 +1,19 @@
+version: "1.0"
+sfdc:
+  loginType: JWT
+  url:      "${SFDMU_INSTANCE_URL}"
+  username: "${SFDMU_USERNAME}"
+  clientId: "${SFDMU_CLIENT_ID}"
+  jwtKey:   "${SFDMU_JWT_KEY}"
+  batchSize: 200
+  maxParallel: 4
+
+csv:
+  folder: "data"
+
+tasks:
+  - name: Upsert Contacts
+    sObject: Contact
+    action: upsert
+    externalId: External_Id__c
+    fileName: Contact.csv
