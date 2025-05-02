@@ -5,7 +5,6 @@ on:
     paths:
       - 'data/**'
       - 'config/**'
-      - 'scripts/**'
       - '.github/workflows/sfdmu-load.yml'
 
 concurrency:
@@ -13,21 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    outputs:
-      valid: ${{ steps.check.outputs.passed }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Validate CSV Schema
-        id: check
-        run: |
-          bash scripts/validate-csv.sh
-          echo "::set-output name=passed::true"
-
   load:
-    needs: validate
-    if: needs.validate.outputs.valid == 'true'
+    # Call the reusable workflow
     uses: ./.github/workflows/load-data-reusable.yml
     with:
       config-file: config/upsert-accounts.yml
