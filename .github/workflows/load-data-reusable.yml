@@ -34,7 +34,7 @@ jobs:
 
       - name: Upload HTML Report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: report-${{ inputs.config-file }}
           path: reports/${{ inputs.config-file }}.html
