@@ -20,21 +20,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Salesforce CLI & SFDMU plugin
+      - name: Install Salesforce CLI
         run: |
           npm install --global @salesforce/cli
-          sf plugins install sfdmu
+          
 
-      - name: Run SFDMU Upsert for ${{ inputs.config-file }}
+      - name: Install SFDMU 
         run: |
-          sf sfdmu -b "${{ inputs.config-file }}" --silent --format json                     | tee sfdmu-output.json
+         sf plugins install sfdmu
 
-      - name: Parse SFDMU Results
-        run: node scripts/parse-sfdmu-results.js sfdmu-output.json
 
-      - name: Upload HTML Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: report-${{ inputs.config-file }}
-          path: reports/${{ inputs.config-file }}.html
