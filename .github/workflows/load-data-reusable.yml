@@ -29,4 +29,8 @@ jobs:
         run: |
          sf plugins install sfdmu
 
+      - name: Install SFDMU 
+        run: |
+          sf sfdmu run
+
 
