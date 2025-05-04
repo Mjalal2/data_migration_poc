@@ -1,4 +1,6 @@
+# .github/workflows/load-data-reusable.yml
 name: Load data into Salesforce
+
 on:
   workflow_call:
     inputs:
@@ -11,26 +13,33 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      SFDMU_USERNAME:     ${{ secrets.SFDMU_USERNAME }}
-      SFDMU_CLIENT_ID:    ${{ secrets.SFDMU_CLIENT_ID }}
-      SFDMU_JWT_KEY:      ${{ secrets.SFDMU_JWT_KEY }}
-      SFDMU_INSTANCE_URL: ${{ secrets.SFDMU_INSTANCE_URL }}
+      SFDMU_CLIENT_ID:     ${{ env.SFDMU_CLIENT_ID }}
+      SFDMU_CLIENT_SECRET: ${{ env.SFDMU_CLIENT_SECRET }}
+      SFDMU_USERNAME:      ${{ env.SFDMU_USERNAME }}
+      SFDMU_PASSWORD:      ${{ env.SFDMU_PASSWORD }}
+      SF_SECURITY_TOKEN:   ${{ env.SF_SECURITY_TOKEN }}
+      SFDMU_INSTANCE_URL:  ${{ env.SFDMU_INSTANCE_URL }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli
+
+      - name: Install SFDMU plugin
+        run: sf plugins install sfdmu
+
+      - name: Authenticate via Username-Password grant
         run: |
-          npm install --global @salesforce/cli
-          
+          sf auth:password:grant \
+            --client-id     "$SFDMU_CLIENT_ID" \
+            --client-secret "$SFDMU_CLIENT_SECRET" \
+            --username      "$SFDMU_USERNAME" \
+            --password      "${SFDMU_PASSWORD}${SF_SECURITY_TOKEN}" \
+            --instance-url  "$SFDMU_INSTANCE_URL"
 
-      - name: Install SFDMU 
+      - name: Run SFDMU data load
         run: |
-         sf plugins install sfdmu
-
-      - name: Install SFDMU 
-        run: |
-          sf sfdmu run
-
-
+          sf sfdmu run \
+            --configfile "${{ inputs.config-file }}"
