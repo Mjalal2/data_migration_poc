@@ -7,18 +7,31 @@ on:
       config-file:
         required: true
         type: string
+    secrets:
+      SFDMU_CLIENT_ID:
+        required: true
+      SFDMU_CLIENT_SECRET:
+        required: true
+      SFDMU_USERNAME:
+        required: true
+      SFDMU_PASSWORD:
+        required: true
+      SF_SECURITY_TOKEN:
+        required: true
+      SFDMU_INSTANCE_URL:
+        required: true
 
 jobs:
   sfdmu:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      SFDMU_CLIENT_ID:     ${{ env.SFDMU_CLIENT_ID }}
-      SFDMU_CLIENT_SECRET: ${{ env.SFDMU_CLIENT_SECRET }}
-      SFDMU_USERNAME:      ${{ env.SFDMU_USERNAME }}
-      SFDMU_PASSWORD:      ${{ env.SFDMU_PASSWORD }}
-      SF_SECURITY_TOKEN:   ${{ env.SF_SECURITY_TOKEN }}
-      SFDMU_INSTANCE_URL:  ${{ env.SFDMU_INSTANCE_URL }}
+      SFDMU_CLIENT_ID:     ${{ secrets.SFDMU_CLIENT_ID }}
+      SFDMU_CLIENT_SECRET: ${{ secrets.SFDMU_CLIENT_SECRET }}
+      SFDMU_USERNAME:      ${{ secrets.SFDMU_USERNAME }}
+      SFDMU_PASSWORD:      ${{ secrets.SFDMU_PASSWORD }}
+      SF_SECURITY_TOKEN:   ${{ secrets.SF_SECURITY_TOKEN }}
+      SFDMU_INSTANCE_URL:  ${{ secrets.SFDMU_INSTANCE_URL }}
 
     steps:
       - name: Checkout code
