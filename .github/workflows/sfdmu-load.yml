@@ -17,13 +17,13 @@ jobs:
     uses: ./.github/workflows/load-data-reusable.yml
     with:
       config-file: config/upsert-accounts.yml
-      env:
+    secrets:
       SFDMU_CLIENT_ID:     ${{ secrets.SFDMU_CLIENT_ID }}
       SFDMU_CLIENT_SECRET: ${{ secrets.SFDMU_CLIENT_SECRET }}
       SFDMU_USERNAME:      ${{ secrets.SFDMU_USERNAME }}
       SFDMU_PASSWORD:      ${{ secrets.SFDMU_PASSWORD }}
       SF_SECURITY_TOKEN:   ${{ secrets.SF_SECURITY_TOKEN }}
-      SFDMU_INSTANCE_URL:  https://login.salesforce.com
+      SFDMU_INSTANCE_URL:  ${{ secrets.SFDMU_INSTANCE_URL }}
 
   verify-login:
     needs: load
@@ -34,11 +34,9 @@ jobs:
       SFDMU_USERNAME:      ${{ secrets.SFDMU_USERNAME }}
       SFDMU_PASSWORD:      ${{ secrets.SFDMU_PASSWORD }}
       SF_SECURITY_TOKEN:   ${{ secrets.SF_SECURITY_TOKEN }}
-      SFDMU_INSTANCE_URL:  https://login.salesforce.com
-
+      SFDMU_INSTANCE_URL:  ${{ secrets.SFDMU_INSTANCE_URL }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
         run: npm install --global @salesforce/cli
@@ -46,7 +44,7 @@ jobs:
       - name: Install SFDMU plugin
         run: sf plugins install sfdmu
 
-      - name: Authenticate via Username-Password grant
+      - name: Authenticate & verify
         run: |
           sf auth:password:grant \
             --client-id     "$SFDMU_CLIENT_ID" \
@@ -54,6 +52,4 @@ jobs:
             --username      "$SFDMU_USERNAME" \
             --password      "${SFDMU_PASSWORD}${SF_SECURITY_TOKEN}" \
             --instance-url  "$SFDMU_INSTANCE_URL"
-
-      - name: Verify org login
-        run: sf org display --targetusername "$SFDMU_USERNAME"
+          sf org display --targetusername "$SFDMU_USERNAME"
