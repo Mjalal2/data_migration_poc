@@ -17,7 +17,7 @@ jobs:
     uses: ./.github/workflows/load-data-reusable.yml
     with:
       config-file: config/upsert-accounts.yml
-    env:
+      env:
       SFDMU_CLIENT_ID:     ${{ secrets.SFDMU_CLIENT_ID }}
       SFDMU_CLIENT_SECRET: ${{ secrets.SFDMU_CLIENT_SECRET }}
       SFDMU_USERNAME:      ${{ secrets.SFDMU_USERNAME }}
